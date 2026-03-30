@@ -206,6 +206,36 @@ st.markdown(
 
     /* Spinner */
     .stSpinner > div { border-top-color: #1a3a5c !important; }
+
+    /* Visible input borders */
+    .stTextInput input,
+    .stNumberInput input {
+        border: 1.5px solid #94a3b8 !important;
+        border-radius: 6px !important;
+        background: white !important;
+        color: #1e293b !important;
+    }
+    .stTextInput input:focus,
+    .stNumberInput input:focus {
+        border-color: #1a3a5c !important;
+        box-shadow: 0 0 0 2px rgba(26,58,92,0.12) !important;
+    }
+    /* Number input stepper container */
+    .stNumberInput > div {
+        border: 1.5px solid #94a3b8 !important;
+        border-radius: 6px !important;
+        background: white !important;
+    }
+    .stNumberInput > div:focus-within {
+        border-color: #1a3a5c !important;
+        box-shadow: 0 0 0 2px rgba(26,58,92,0.12) !important;
+    }
+    /* Selectbox visible border */
+    .stSelectbox > div > div {
+        border: 1.5px solid #94a3b8 !important;
+        border-radius: 6px !important;
+        background: white !important;
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -623,7 +653,7 @@ with tab2:
         st.markdown("---")
 
         # ── Cash Flow Table ─────────────────────────────────────────────────
-        st.markdown("### 10-Year Cash Flow Projection")
+        st.markdown(f"### {inputs.hold_period}-Year Cash Flow Projection")
         cf = results.cash_flow_table
 
         # Styled dataframe
