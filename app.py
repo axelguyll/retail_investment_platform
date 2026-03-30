@@ -31,54 +31,181 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-    .main { background-color: #f8fafc; }
-    .stTabs [data-baseweb="tab-list"] { gap: 24px; }
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;1,400&display=swap');
+
+    * { font-family: 'Source Sans 3', -apple-system, sans-serif; }
+
+    /* App background */
+    .stApp, .main { background-color: #f1f5f9 !important; }
+    .main .block-container { padding-top: 1.5rem; max-width: 1400px; }
+
+    /* Hide Streamlit chrome */
+    #MainMenu { visibility: hidden; }
+    footer { visibility: hidden; }
+    .stDeployButton { display: none; }
+
+    /* Navy sidebar */
+    [data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #1a3a5c 0%, #132d47 100%) !important;
+    }
+    [data-testid="stSidebar"] .stMarkdown p,
+    [data-testid="stSidebar"] label,
+    [data-testid="stSidebar"] .stCaption p,
+    [data-testid="stSidebar"] span:not(.st-emotion-cache-hidden) {
+        color: rgba(255,255,255,0.8) !important;
+    }
+    [data-testid="stSidebar"] h2,
+    [data-testid="stSidebar"] h3 { color: white !important; border: none !important; }
+    [data-testid="stSidebar"] hr { border-color: rgba(255,255,255,0.15) !important; }
+    [data-testid="stSidebar"] .stTextInput input {
+        background: rgba(255,255,255,0.1) !important;
+        border-color: rgba(255,255,255,0.25) !important;
+        color: white !important;
+        border-radius: 6px !important;
+    }
+    [data-testid="stSidebar"] .stTextInput label { color: rgba(255,255,255,0.7) !important; }
+    [data-testid="stSidebar"] strong { color: white !important; }
+
+    /* Page header banner */
+    .page-header {
+        background: linear-gradient(135deg, #1a3a5c 0%, #2d6a9f 100%);
+        padding: 22px 28px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 20px rgba(26,58,92,0.18);
+    }
+    .page-header h1 {
+        font-family: 'Playfair Display', serif !important;
+        color: white !important;
+        margin: 0 !important;
+        font-size: 26px !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.01em;
+    }
+    .page-header p {
+        color: rgba(255,255,255,0.65);
+        margin: 5px 0 0;
+        font-size: 12px;
+        font-weight: 300;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+    }
+
+    /* Tabs */
+    .stTabs [data-baseweb="tab-list"] {
+        background: white;
+        border-bottom: 2px solid #e2e8f0;
+        border-radius: 8px 8px 0 0;
+        gap: 0;
+        padding: 0 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
     .stTabs [data-baseweb="tab"] {
-        height: 44px;
-        font-weight: 600;
-        font-size: 15px;
-        color: #1a3a5c;
+        height: 48px;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        color: #64748b !important;
+        border-bottom: 3px solid transparent !important;
+        margin-bottom: -2px;
+        padding: 0 24px !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        letter-spacing: 0.01em;
     }
     .stTabs [aria-selected="true"] {
-        background-color: #1a3a5c;
-        color: white;
-        border-radius: 6px;
+        color: #1a3a5c !important;
+        border-bottom: 3px solid #1a3a5c !important;
+        background: transparent !important;
     }
+    .stTabs [data-baseweb="tab-panel"] {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-top: none;
+        border-radius: 0 0 8px 8px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    /* Headings */
+    h1 { font-family: 'Playfair Display', serif !important; color: #1a3a5c !important; }
+    h2 { font-family: 'Playfair Display', serif !important; color: #1a3a5c !important; font-size: 22px !important; }
+    h3 { color: #2d6a9f !important; font-size: 16px !important; font-weight: 600 !important; letter-spacing: 0.01em; }
+
+    /* Metric cards */
     .metric-card {
         background: white;
         border: 1px solid #e2e8f0;
-        border-radius: 10px;
-        padding: 16px 20px;
+        border-top: 3px solid #1a3a5c;
+        border-radius: 8px;
+        padding: 18px 16px 14px;
         text-align: center;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        box-shadow: 0 2px 8px rgba(26,58,92,0.07);
     }
     .metric-label {
-        font-size: 12px;
-        color: #64748b;
+        font-size: 10px;
+        color: #94a3b8;
         font-weight: 600;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.1em;
+        margin-bottom: 6px;
     }
     .metric-value {
+        font-family: 'Playfair Display', serif;
         font-size: 26px;
         font-weight: 700;
         color: #1a3a5c;
-        margin-top: 4px;
+        line-height: 1;
+        margin: 4px 0;
     }
     .metric-sub {
         font-size: 11px;
         color: #94a3b8;
-        margin-top: 2px;
+        margin-top: 5px;
     }
-    h1 { color: #1a3a5c !important; }
-    h2, h3 { color: #2d6a9f !important; }
+
+    /* Source badges */
     .source-badge {
         display: inline-block;
-        padding: 2px 8px;
-        border-radius: 12px;
+        padding: 2px 10px;
+        border-radius: 20px;
         font-size: 11px;
         font-weight: 600;
     }
+
+    /* Buttons */
+    .stButton > button, .stFormSubmitButton > button {
+        border-radius: 6px !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.02em !important;
+        transition: all 0.2s !important;
+    }
+    .stButton > button[kind="primary"], .stFormSubmitButton > button {
+        background-color: #1a3a5c !important;
+        color: white !important;
+        border: none !important;
+    }
+    .stButton > button[kind="primary"]:hover, .stFormSubmitButton > button:hover {
+        background-color: #2d6a9f !important;
+        box-shadow: 0 4px 14px rgba(26,58,92,0.3) !important;
+    }
+
+    /* Dataframe */
+    .stDataFrame { border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+
+    /* Form */
+    [data-testid="stForm"] {
+        background: white;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+        padding: 20px !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    /* HR */
+    hr { border-color: #e2e8f0 !important; margin: 20px 0 !important; }
+
+    /* Spinner */
+    .stSpinner > div { border-top-color: #1a3a5c !important; }
     </style>
     """,
     unsafe_allow_html=True,
@@ -87,10 +214,19 @@ st.markdown(
 
 # ─── Sidebar ─────────────────────────────────────────────────────────────────
 with st.sidebar:
-    st.markdown("## 🏬 Retail Investment Platform")
+    st.markdown(
+        """
+        <div style='padding: 8px 0 16px;'>
+            <div style='font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:6px;'>Retail Intelligence</div>
+            <div style='font-family:"Playfair Display",serif;font-size:22px;font-weight:700;color:white;line-height:1.1;'>Investment<br>Platform</div>
+            <div style='height:2px;width:32px;background:rgba(255,255,255,0.25);margin-top:10px;'></div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
     st.markdown("---")
     st.markdown("### API Keys")
-    st.caption("Enter keys or set as environment variables (FRED_API_KEY, BLS_API_KEY, CENSUS_API_KEY)")
+    st.caption("Optional — app works without keys using CSV fallback")
 
     fred_key = st.text_input(
         "FRED API Key",
@@ -116,15 +252,34 @@ with st.sidebar:
     st.caption("Weights are fixed per model spec")
     for metric, weight in WEIGHTS.items():
         label = metric.replace("_", " ").title()
-        st.markdown(f"**{label}:** {int(weight * 100)}%")
+        pct = int(weight * 100)
+        st.markdown(
+            f"<div style='margin-bottom:8px;'>"
+            f"<div style='display:flex;justify-content:space-between;margin-bottom:3px;'>"
+            f"<span style='font-size:12px;color:rgba(255,255,255,0.7);'>{label}</span>"
+            f"<span style='font-size:12px;color:white;font-weight:600;'>{pct}%</span>"
+            f"</div>"
+            f"<div style='height:3px;background:rgba(255,255,255,0.15);border-radius:2px;'>"
+            f"<div style='height:100%;width:{pct}%;background:rgba(255,255,255,0.5);border-radius:2px;'></div>"
+            f"</div></div>",
+            unsafe_allow_html=True,
+        )
 
     st.markdown("---")
-    st.caption("Data sources: FRED · BLS · Census ACS · CSV Fallback")
+    st.caption("Data: FRED · BLS · Census ACS · CSV Fallback")
 
 
 # ─── Main Content ────────────────────────────────────────────────────────────
-st.markdown("# 🏬 Retail Real Estate Investment Platform")
-tab1, tab2 = st.tabs(["📊 Market Screener", "🧮 Underwriting Tool"])
+st.markdown(
+    """
+    <div class='page-header'>
+        <h1>Retail Real Estate Investment Platform</h1>
+        <p>Market Intelligence &amp; Underwriting Analysis</p>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+tab1, tab2 = st.tabs(["Market Screener", "Underwriting Tool"])
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -132,11 +287,11 @@ tab1, tab2 = st.tabs(["📊 Market Screener", "🧮 Underwriting Tool"])
 # ═══════════════════════════════════════════════════════════════════════════════
 with tab1:
     st.markdown("## Market Screener")
-    st.caption("Scores 40+ US metros using employment growth, population growth, retail vacancy trend, and cap rate spread.")
+    st.caption("Scores 25+ US metros on employment growth, population growth, retail vacancy trend, and cap rate spread.")
 
     col_refresh, col_info = st.columns([1, 5])
     with col_refresh:
-        load_data = st.button("🔄 Load / Refresh Data", type="primary", use_container_width=True)
+        load_data = st.button("Load / Refresh Data", type="primary", use_container_width=True)
 
     if "market_data" not in st.session_state or load_data:
         with st.spinner("Fetching market data..."):
@@ -177,7 +332,7 @@ with tab1:
     st.markdown("---")
 
     # ── Ranked Table ──────────────────────────────────────────────────────────
-    st.markdown("### 🏆 Metro Rankings")
+    st.markdown("### Metro Rankings")
 
     # Display columns
     display_cols = {
@@ -216,7 +371,7 @@ with tab1:
     st.markdown("---")
 
     # ── Top 10 Bar Chart ──────────────────────────────────────────────────────
-    st.markdown("### 📈 Top 10 Markets by Score")
+    st.markdown("### Top 10 Markets by Score")
     top10 = df_scored.head(10)
 
     fig_bar = go.Figure()
@@ -248,7 +403,7 @@ with tab1:
     st.markdown("---")
 
     # ── Market Drilldown ─────────────────────────────────────────────────────
-    st.markdown("### 🔍 Market Drilldown")
+    st.markdown("### Market Drilldown")
     metro_list = df_scored["metro"].tolist()
     selected_metro = st.selectbox("Select a metro for detailed analysis:", metro_list)
 
@@ -355,7 +510,7 @@ with tab2:
     st.caption("Enter deal parameters to generate return metrics and a 10-year cash flow projection.")
 
     with st.form("underwriting_form"):
-        st.markdown("### 🏢 Property Details")
+        st.markdown("### Property Details")
         col1, col2, col3 = st.columns(3)
         with col1:
             property_name = st.text_input("Property Name", value="Retail Center at Main St")
@@ -378,7 +533,7 @@ with tab2:
         with col8:
             noi_growth = st.number_input("Annual NOI Growth Rate (%)", value=2.0, min_value=0.0, max_value=10.0, step=0.25)
 
-        st.markdown("### 💰 Debt Terms")
+        st.markdown("### Debt Terms")
         col9, col10, col11 = st.columns(3)
         with col9:
             ltv = st.number_input("LTV (%)", value=65.0, min_value=1.0, max_value=95.0, step=1.0)
@@ -387,14 +542,14 @@ with tab2:
         with col11:
             amortization = st.number_input("Amortization (Years)", value=25, min_value=1, max_value=40, step=1)
 
-        st.markdown("### 📅 Disposition")
+        st.markdown("### Disposition")
         col12, col13 = st.columns(2)
         with col12:
             hold_period = st.number_input("Hold Period (Years)", value=7, min_value=1, max_value=10, step=1)
         with col13:
             exit_cap = st.number_input("Exit Cap Rate (%)", value=7.0, min_value=0.1, max_value=20.0, step=0.1)
 
-        submitted = st.form_submit_button("🚀 Run Underwriting", type="primary", use_container_width=True)
+        submitted = st.form_submit_button("Run Underwriting", type="primary", use_container_width=True)
 
     if submitted or "uw_results" in st.session_state:
         if submitted:
@@ -421,7 +576,7 @@ with tab2:
         inputs = st.session_state["uw_inputs"]
 
         st.markdown("---")
-        st.markdown("### 📊 Return Metrics")
+        st.markdown("### Return Metrics")
 
         # Key metrics row
         irr_display = f"{results.irr * 100:.2f}%" if results.irr is not None else "N/A"
@@ -468,7 +623,7 @@ with tab2:
         st.markdown("---")
 
         # ── Cash Flow Table ─────────────────────────────────────────────────
-        st.markdown("### 📋 10-Year Cash Flow Projection")
+        st.markdown("### 10-Year Cash Flow Projection")
         cf = results.cash_flow_table
 
         # Styled dataframe
@@ -495,7 +650,7 @@ with tab2:
         st.markdown("---")
 
         # ── Charts ──────────────────────────────────────────────────────────
-        st.markdown("### 📈 Visual Analysis")
+        st.markdown("### Visual Analysis")
         chart_col1, chart_col2 = st.columns(2)
 
         with chart_col1:
@@ -592,15 +747,15 @@ with tab2:
         st.markdown("---")
 
         # ── PDF Export ──────────────────────────────────────────────────────
-        st.markdown("### 📄 Export Pro Forma")
+        st.markdown("### Export Pro Forma")
         pdf_col, _ = st.columns([2, 4])
         with pdf_col:
-            if st.button("📥 Export PDF", type="primary", use_container_width=True):
+            if st.button("Export PDF", type="primary", use_container_width=True):
                 with st.spinner("Generating PDF..."):
                     pdf_bytes = generate_pdf(inputs, results)
                     filename = f"{inputs.property_name.replace(' ', '_').replace('/', '-')}_ProForma.pdf"
                     st.download_button(
-                        label="⬇️ Download PDF",
+                        label="Download PDF",
                         data=pdf_bytes,
                         file_name=filename,
                         mime="application/pdf",
