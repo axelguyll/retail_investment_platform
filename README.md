@@ -2,7 +2,7 @@
 
 A Streamlit web app for analyzing and underwriting retail real estate investments using live government data.
 
-**[Live Demo →](https://axelguyll-retail-investment-platform.streamlit.app)** *(link active after deploy)*
+**[Live Demo →](https://retailinvestmentplatform-ktmks3u783neeliwyudbbf.streamlit.app)**
 
 ---
 
