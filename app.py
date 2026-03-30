@@ -94,19 +94,19 @@ with st.sidebar:
 
     fred_key = st.text_input(
         "FRED API Key",
-        value=os.environ.get("FRED_API_KEY", ""),
+        value=st.secrets.get("FRED_API_KEY", os.environ.get("FRED_API_KEY", "")),
         type="password",
         help="Get a free key at https://fred.stlouisfed.org/docs/api/api_key.html",
     )
     bls_key = st.text_input(
         "BLS API Key",
-        value=os.environ.get("BLS_API_KEY", ""),
+        value=st.secrets.get("BLS_API_KEY", os.environ.get("BLS_API_KEY", "")),
         type="password",
         help="Register at https://data.bls.gov/registrationEngine/",
     )
     census_key = st.text_input(
         "Census API Key",
-        value=os.environ.get("CENSUS_API_KEY", ""),
+        value=st.secrets.get("CENSUS_API_KEY", os.environ.get("CENSUS_API_KEY", "")),
         type="password",
         help="Request at https://api.census.gov/data/key_signup.html",
     )
