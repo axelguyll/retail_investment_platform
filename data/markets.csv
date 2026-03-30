@@ -1,0 +1,49 @@
+metro,state,employment_growth,population_growth,retail_vacancy_trend,cap_rate,treasury_10yr,cap_rate_spread
+New York-Newark,NY,1.8,0.4,-0.3,5.2,4.3,0.9
+Los Angeles,CA,2.1,0.6,-0.5,5.5,4.3,1.2
+Chicago,IL,1.5,0.2,-0.2,6.1,4.3,1.8
+Dallas-Fort Worth,TX,3.8,2.1,-0.8,6.3,4.3,2.0
+Houston,TX,3.2,1.8,-0.6,6.5,4.3,2.2
+Phoenix,AZ,4.1,2.4,-1.0,6.8,4.3,2.5
+Philadelphia,PA,1.3,0.3,-0.1,6.0,4.3,1.7
+San Antonio,TX,3.5,2.0,-0.9,6.7,4.3,2.4
+San Diego,CA,2.4,0.9,-0.4,5.8,4.3,1.5
+Jacksonville,FL,3.9,2.3,-1.1,7.0,4.3,2.7
+Austin,TX,5.2,3.1,-1.4,6.9,4.3,2.6
+Columbus,OH,2.9,1.4,-0.7,7.2,4.3,2.9
+Charlotte,NC,4.3,2.6,-1.2,6.8,4.3,2.5
+Indianapolis,IN,2.7,1.2,-0.6,7.4,4.3,3.1
+San Francisco,CA,1.2,0.1,0.4,4.8,4.3,0.5
+Seattle,WA,2.6,1.1,-0.5,5.6,4.3,1.3
+Denver,CO,3.3,1.7,-0.8,6.4,4.3,2.1
+Nashville,TN,4.0,2.2,-1.1,6.6,4.3,2.3
+Oklahoma City,OK,2.2,1.0,-0.4,7.6,4.3,3.3
+El Paso,TX,1.9,1.1,-0.3,7.8,4.3,3.5
+Washington DC,DC,1.7,0.8,-0.2,5.4,4.3,1.1
+Boston,MA,2.0,0.7,-0.3,5.3,4.3,1.0
+Las Vegas,NV,3.6,2.0,-0.9,7.1,4.3,2.8
+Memphis,TN,1.8,0.5,-0.2,7.9,4.3,3.6
+Louisville,KY,2.1,0.8,-0.4,7.5,4.3,3.2
+Baltimore,MD,1.4,0.3,-0.1,6.2,4.3,1.9
+Milwaukee,WI,1.6,0.4,-0.2,7.3,4.3,3.0
+Albuquerque,NM,1.7,0.6,-0.3,7.7,4.3,3.4
+Tucson,AZ,2.3,1.0,-0.5,7.6,4.3,3.3
+Fresno,CA,1.5,0.7,-0.2,7.4,4.3,3.1
+Sacramento,CA,2.2,1.0,-0.4,6.2,4.3,1.9
+Kansas City,MO,2.5,1.1,-0.5,7.0,4.3,2.7
+Mesa,AZ,3.7,2.2,-1.0,6.9,4.3,2.6
+Atlanta,GA,3.4,1.9,-0.8,6.7,4.3,2.4
+Omaha,NE,2.6,1.2,-0.5,7.3,4.3,3.0
+Colorado Springs,CO,3.1,1.6,-0.7,7.1,4.3,2.8
+Raleigh,NC,4.8,2.9,-1.3,6.5,4.3,2.2
+Long Beach,CA,2.0,0.5,-0.3,5.7,4.3,1.4
+Virginia Beach,VA,1.9,0.7,-0.3,6.8,4.3,2.5
+Minneapolis,MN,2.3,0.9,-0.4,6.6,4.3,2.3
+Tampa,FL,3.7,2.1,-0.9,6.9,4.3,2.6
+Orlando,FL,4.2,2.5,-1.1,7.0,4.3,2.7
+Miami,FL,2.8,1.5,-0.6,5.9,4.3,1.6
+Portland,OR,2.4,1.0,-0.4,5.8,4.3,1.5
+Pittsburgh,PA,1.3,0.2,-0.1,7.1,4.3,2.8
+Cincinnati,OH,2.2,0.8,-0.4,7.3,4.3,3.0
+Richmond,VA,2.7,1.1,-0.5,7.0,4.3,2.7
+Salt Lake City,UT,4.0,2.3,-1.0,6.7,4.3,2.4

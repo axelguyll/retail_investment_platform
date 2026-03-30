@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Ledger — Retail Investment Platform</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='12' fill='%23090a12'/><text y='72' x='50' text-anchor='middle' font-size='60' fill='%23c9a55a'>₿</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=Sora:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- ── Sidebar ─────────────────────────────────────────────────────────────── -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-eyebrow">retail intelligence</div>
+    <div class="logo-name">The Ledger</div>
+    <div class="logo-tagline">Investment Platform</div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Tools</div>
+    <button class="nav-item active" onclick="switchView('screener', this)">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/>
+        <rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/>
+      </svg>
+      Market Screener
+    </button>
+    <button class="nav-item" onclick="switchView('underwriting', this)">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <polyline points="1,13 5,9 9,11 15,4"/>
+        <line x1="13" y1="4" x2="15" y2="4"/><line x1="15" y1="4" x2="15" y2="6"/>
+      </svg>
+      Underwriting Tool
+    </button>
+  </nav>
+
+  <div class="sidebar-divider"></div>
+
+  <div class="sidebar-panel">
+    <div class="panel-label" style="margin-bottom:10px">Data Sources</div>
+    <div class="source-row"><div class="source-dot fallback"></div>Treasury Rate (CSV)</div>
+    <div class="source-row"><div class="source-dot fallback"></div>Employment (CSV)</div>
+    <div class="source-row"><div class="source-dot fallback"></div>Population (CSV)</div>
+    <div class="source-row"><div class="source-dot fallback"></div>Vacancy / Cap Rate</div>
+
+    <div class="sidebar-divider" style="margin: 14px 0;"></div>
+
+    <div class="panel-label">Score Weights</div>
+    <div class="weight-item">
+      <div class="weight-header"><span class="weight-name">Cap Rate Spread</span><span class="weight-pct">30%</span></div>
+      <div class="weight-track"><div class="weight-fill" style="width:100%"></div></div>
+    </div>
+    <div class="weight-item">
+      <div class="weight-header"><span class="weight-name">Employment Growth</span><span class="weight-pct">25%</span></div>
+      <div class="weight-track"><div class="weight-fill" style="width:83.3%"></div></div>
+    </div>
+    <div class="weight-item">
+      <div class="weight-header"><span class="weight-name">Vacancy Trend</span><span class="weight-pct">25%</span></div>
+      <div class="weight-track"><div class="weight-fill" style="width:83.3%"></div></div>
+    </div>
+    <div class="weight-item">
+      <div class="weight-header"><span class="weight-name">Population Growth</span><span class="weight-pct">20%</span></div>
+      <div class="weight-track"><div class="weight-fill" style="width:66.7%"></div></div>
+    </div>
+
+    <div style="height: 20px;"></div>
+  </div>
+</aside>
+
+<!-- ── Main ───────────────────────────────────────────────────────────────── -->
+<main class="main">
+  <header class="header">
+    <div class="header-left">
+      <span class="header-title" id="view-title">Market Screener</span>
+      <span class="header-subtitle" id="view-subtitle">42 US metros · composite scoring model</span>
+    </div>
+    <div class="header-right">
+      <span class="header-date" id="hdr-date"></span>
+      <button class="btn btn-ghost" style="font-size:11px" onclick="openKeysModal()">⚙ API Keys</button>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- ══════════ MARKET SCREENER VIEW ══════════ -->
+    <div class="view active" id="view-screener">
+      <div class="section-intro">
+        <div class="section-title">Metro Market Rankings</div>
+        <div class="gold-rule"></div>
+        <div class="section-desc">
+          Weighted scoring across employment growth, population growth, retail vacancy trend, and cap rate spread vs. 10-yr Treasury. Treasury rate updates live when a FRED API key is saved.
+        </div>
+      </div>
+
+      <!-- Metric summary cards -->
+      <div class="metrics-row">
+        <div class="metric-card">
+          <div class="mc-label">Markets Tracked</div>
+          <div class="mc-value">42</div>
+          <div class="mc-sub">US Metro Areas</div>
+        </div>
+        <div class="metric-card">
+          <div class="mc-label">Top Score</div>
+          <div class="mc-value" id="mc-top-score">—</div>
+          <div class="mc-sub" id="mc-top-metro">Loading…</div>
+        </div>
+        <div class="metric-card">
+          <div class="mc-label">Avg Cap Rate</div>
+          <div class="mc-value" id="mc-avg-cap">—</div>
+          <div class="mc-sub">Across all metros</div>
+        </div>
+        <div class="metric-card">
+          <div class="mc-label">10-Yr Treasury</div>
+          <div class="mc-value" id="mc-treasury">—</div>
+          <div class="mc-sub" id="mc-treasury-src">CSV fallback</div>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="table-card">
+        <div class="table-toolbar">
+          <span class="table-toolbar-title">All Markets</span>
+          <input type="text" class="table-search" placeholder="Filter markets…" oninput="filterTable(this.value)">
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th onclick="sortBy('rank')"                id="th-rank">Rank ↑</th>
+                <th onclick="sortBy('metro')"               id="th-metro">Metro</th>
+                <th onclick="sortBy('state')"               id="th-state">St.</th>
+                <th onclick="sortBy('total_score')"         id="th-total_score">Score</th>
+                <th onclick="sortBy('employment_growth')"   id="th-employment_growth">Emp. Growth</th>
+                <th onclick="sortBy('population_growth')"   id="th-population_growth">Pop. Growth</th>
+                <th onclick="sortBy('retail_vacancy_trend')" id="th-retail_vacancy_trend">Vacancy Trend</th>
+                <th onclick="sortBy('cap_rate_spread')"     id="th-cap_rate_spread">Cap Spread</th>
+                <th onclick="sortBy('cap_rate')"            id="th-cap_rate">Cap Rate</th>
+              </tr>
+            </thead>
+            <tbody id="markets-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Top 10 chart -->
+      <div class="chart-card">
+        <div class="chart-label">Top 10 Markets — Composite Score</div>
+        <canvas id="chart-top10" height="180"></canvas>
+      </div>
+
+      <!-- Drilldown -->
+      <div class="drilldown" id="drilldown">
+        <div class="drilldown-header">
+          <span class="drilldown-title" id="dd-title">—</span>
+          <span class="drilldown-tag">Market Drilldown</span>
+        </div>
+        <div class="drilldown-metrics" id="dd-metrics"></div>
+        <div class="chart-grid">
+          <div class="chart-card" style="margin:0">
+            <div class="chart-label">Score Breakdown by Factor</div>
+            <canvas id="chart-breakdown" height="220"></canvas>
+          </div>
+          <div class="chart-card" style="margin:0">
+            <div class="chart-label">Employment Growth vs. Cap Rate Spread</div>
+            <canvas id="chart-scatter" height="220"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ UNDERWRITING VIEW ══════════ -->
+    <div class="view" id="view-underwriting">
+      <div class="section-intro">
+        <div class="section-title">Property Underwriting</div>
+        <div class="gold-rule"></div>
+        <div class="section-desc">
+          Levered IRR · DSCR · Cash-on-Cash · Equity Multiple · 10-year cash flow projection · Sensitivity Analysis · PDF Export
+        </div>
+      </div>
+
+      <div class="uw-layout">
+        <!-- Form -->
+        <div class="form-card">
+          <div class="form-top">Deal Parameters</div>
+          <div class="form-body">
+            <div class="form-section">Property Details</div>
+            <div class="form-row cols-1">
+              <div><label>Property Name</label><input type="text" id="f-name" value="Retail Center at Main St"></div>
+            </div>
+            <div class="form-row cols-2">
+              <div><label>Market</label><input type="text" id="f-market" value="Dallas-Fort Worth, TX"></div>
+              <div><label>Square Footage</label><input type="number" id="f-sqft" value="25000"></div>
+            </div>
+            <div class="form-row cols-2">
+              <div><label>Purchase Price ($)</label><input type="number" id="f-price" value="5000000"></div>
+              <div><label>Year 1 NOI ($)</label><input type="number" id="f-noi" value="325000"></div>
+            </div>
+            <div class="form-row cols-2">
+              <div><label>In-Place Cap Rate (%)</label><input type="number" id="f-cap" value="6.5" step="0.1"></div>
+              <div><label>Vacancy Rate (%)</label><input type="number" id="f-vac" value="5.0" step="0.5"></div>
+            </div>
+            <div class="form-row cols-1">
+              <div><label>Annual NOI Growth (%)</label><input type="number" id="f-noigrowth" value="2.0" step="0.25"></div>
+            </div>
+
+            <div class="form-section">Debt Terms</div>
+            <div class="form-row cols-2">
+              <div><label>LTV (%)</label><input type="number" id="f-ltv" value="65" step="1"></div>
+              <div><label>Interest Rate (%)</label><input type="number" id="f-rate" value="6.25" step="0.05"></div>
+            </div>
+            <div class="form-row cols-1">
+              <div><label>Amortization (Years)</label><input type="number" id="f-amort" value="25" step="1"></div>
+            </div>
+
+            <div class="form-section">Disposition</div>
+            <div class="form-row cols-2">
+              <div><label>Hold Period (Years)</label><input type="number" id="f-hold" value="7" min="1" max="10"></div>
+              <div><label>Exit Cap Rate (%)</label><input type="number" id="f-exit" value="7.0" step="0.1"></div>
+            </div>
+
+            <button class="btn-run" onclick="runUW()">Run Underwriting Analysis</button>
+          </div>
+        </div>
+
+        <!-- Results -->
+        <div id="uw-results">
+          <div class="results-empty">
+            <div class="results-empty-icon">◼</div>
+            <div class="results-empty-title">Awaiting deal parameters</div>
+            <div class="results-empty-sub">Enter inputs and run the analysis to see return metrics, sensitivity analysis, and export to PDF</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</main>
+
+<!-- ── API Keys Modal ─────────────────────────────────────────────────────────── -->
+<div class="modal-backdrop" id="keys-modal" onclick="closeKeysModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">API Keys</span>
+      <button class="modal-close" onclick="closeKeysModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p class="modal-desc">
+        Keys are stored in your browser's local storage and never sent anywhere except the respective API provider.
+        FRED key enables live treasury rate fetching, which updates all cap rate spread calculations.
+        Leave blank to use CSV fallback data.
+      </p>
+
+      <div class="modal-field">
+        <label>
+          FRED API Key
+          <a class="key-link" href="https://fred.stlouisfed.org/docs/api/api_key.html" target="_blank">Get key ↗</a>
+        </label>
+        <div class="key-input-wrap">
+          <input type="password" id="k-fred" placeholder="e.g. abcd1234efgh5678…" oninput="updateKeyStatus('fred')">
+          <span class="key-status" id="ks-fred"></span>
+        </div>
+      </div>
+
+      <div class="modal-field">
+        <label>
+          BLS API Key
+          <a class="key-link" href="https://data.bls.gov/registrationEngine/" target="_blank">Get key ↗</a>
+        </label>
+        <div class="key-input-wrap">
+          <input type="password" id="k-bls" placeholder="e.g. abcd1234efgh5678…" oninput="updateKeyStatus('bls')">
+          <span class="key-status" id="ks-bls"></span>
+        </div>
+      </div>
+
+      <div class="modal-field">
+        <label>
+          Census API Key
+          <a class="key-link" href="https://api.census.gov/data/key_signup.html" target="_blank">Get key ↗</a>
+        </label>
+        <div class="key-input-wrap">
+          <input type="password" id="k-census" placeholder="e.g. abcd1234efgh5678…" oninput="updateKeyStatus('census')">
+          <span class="key-status" id="ks-census"></span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <span class="modal-saved" id="saved-msg">✓ Saved</span>
+      <button class="btn btn-ghost" onclick="clearKeys()">Clear All</button>
+      <button class="btn btn-primary" onclick="saveKeys()">Save & Apply Keys</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── CDN Libraries ─────────────────────────────────────────────────────────── -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
+
+<!-- ── App JS (load order matches dependency order) ─────────────────────────── -->
+<script src="js/data.js"></script>
+<script src="js/scoring.js"></script>
+<script src="js/table.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/underwriting.js"></script>
+<script src="js/sensitivity.js"></script>
+<script src="js/pdf.js"></script>
+<script src="js/api.js"></script>
+<script src="js/ui.js"></script>
+
+</body>
+</html>
