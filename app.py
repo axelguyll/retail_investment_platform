@@ -630,7 +630,7 @@ with tab2:
         def style_cf_table(df):
             def highlight_exit(row):
                 if row["Year"] == inputs.hold_period:
-                    return ["background-color: #e8f0f8; font-weight: bold"] * len(row)
+                    return ["background-color: #dbeafe; color: #1e3a5c; font-weight: 700"] * len(row)
                 return [""] * len(row)
 
             return df.style.apply(highlight_exit, axis=1).format(
