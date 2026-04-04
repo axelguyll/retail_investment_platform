@@ -18,6 +18,7 @@ from data.fetch_data import build_market_data
 from scoring.score_markets import score_markets, get_score_breakdown, WEIGHTS
 from underwriting.underwrite import DealInputs, run_underwriting
 from export.pdf_export import generate_pdf
+from map.market_map import aggregate_to_states, build_choropleth_figure
 
 # ─── Page Config ─────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -359,177 +360,257 @@ with tab1:
                 unsafe_allow_html=True,
             )
 
-    st.markdown("---")
-
-    # ── Ranked Table ──────────────────────────────────────────────────────────
-    st.markdown("### Metro Rankings")
-
-    # Display columns
-    display_cols = {
-        "rank": "Rank",
-        "metro": "Metro",
-        "state": "State",
-        "total_score": "Score",
-        "employment_growth": "Employment Growth %",
-        "population_growth": "Pop. Growth %",
-        "retail_vacancy_trend": "Vacancy Trend (pp)",
-        "cap_rate_spread": "Cap Rate Spread %",
-        "cap_rate": "Cap Rate %",
-    }
-
-    df_display = df_scored[list(display_cols.keys())].rename(columns=display_cols).copy()
-
-    # Format columns
-    df_display["Score"] = df_display["Score"].map("{:.1f}".format)
-    df_display["Employment Growth %"] = df_display["Employment Growth %"].map("{:.2f}%".format)
-    df_display["Pop. Growth %"] = df_display["Pop. Growth %"].map("{:.2f}%".format)
-    df_display["Vacancy Trend (pp)"] = df_display["Vacancy Trend (pp)"].map("{:.1f}".format)
-    df_display["Cap Rate Spread %"] = df_display["Cap Rate Spread %"].map("{:.2f}%".format)
-    df_display["Cap Rate %"] = df_display["Cap Rate %"].map("{:.2f}%".format)
-
-    st.dataframe(
-        df_display,
-        use_container_width=True,
-        height=480,
-        hide_index=True,
-        column_config={
-            "Rank": st.column_config.NumberColumn(width="small"),
-            "Score": st.column_config.TextColumn(width="small"),
-        },
+    # ── Sub-view toggle ───────────────────────────────────────────────────────
+    view = st.radio(
+        "View",
+        ["Rankings Table", "Market Map", "Charts"],
+        horizontal=True,
+        label_visibility="collapsed",
     )
 
     st.markdown("---")
 
-    # ── Top 10 Bar Chart ──────────────────────────────────────────────────────
-    st.markdown("### Top 10 Markets by Score")
-    top10 = df_scored.head(10)
+    if view == "Rankings Table":
+        # ── Ranked Table ──────────────────────────────────────────────────────────
+        st.markdown("### Metro Rankings")
 
-    fig_bar = go.Figure()
-    fig_bar.add_trace(
-        go.Bar(
-            x=top10["metro"],
-            y=top10["total_score"],
-            marker=dict(
-                color=top10["total_score"],
-                colorscale="Blues",
-                showscale=False,
-            ),
-            text=top10["total_score"].map("{:.1f}".format),
-            textposition="outside",
-        )
-    )
-    fig_bar.update_layout(
-        xaxis_tickangle=-30,
-        yaxis_title="Composite Score (0–100)",
-        plot_bgcolor="white",
-        paper_bgcolor="white",
-        margin=dict(t=20, b=80, l=40, r=20),
-        height=350,
-        font=dict(color="#1a3a5c"),
-    )
-    fig_bar.update_yaxes(range=[0, 105], gridcolor="#e2e8f0")
-    st.plotly_chart(fig_bar, use_container_width=True)
+        # Display columns
+        display_cols = {
+            "rank": "Rank",
+            "metro": "Metro",
+            "state": "State",
+            "total_score": "Score",
+            "employment_growth": "Employment Growth %",
+            "population_growth": "Pop. Growth %",
+            "retail_vacancy_trend": "Vacancy Trend (pp)",
+            "cap_rate_spread": "Cap Rate Spread %",
+            "cap_rate": "Cap Rate %",
+        }
 
-    st.markdown("---")
+        df_display = df_scored[list(display_cols.keys())].rename(columns=display_cols).copy()
 
-    # ── Market Drilldown ─────────────────────────────────────────────────────
-    st.markdown("### Market Drilldown")
-    metro_list = df_scored["metro"].tolist()
-    selected_metro = st.selectbox("Select a metro for detailed analysis:", metro_list)
+        # Format columns
+        df_display["Score"] = df_display["Score"].map("{:.1f}".format)
+        df_display["Employment Growth %"] = df_display["Employment Growth %"].map("{:.2f}%".format)
+        df_display["Pop. Growth %"] = df_display["Pop. Growth %"].map("{:.2f}%".format)
+        df_display["Vacancy Trend (pp)"] = df_display["Vacancy Trend (pp)"].map("{:.1f}".format)
+        df_display["Cap Rate Spread %"] = df_display["Cap Rate Spread %"].map("{:.2f}%".format)
+        df_display["Cap Rate %"] = df_display["Cap Rate %"].map("{:.2f}%".format)
 
-    row = df_scored[df_scored["metro"] == selected_metro].iloc[0]
-    breakdown = get_score_breakdown(row)
-
-    col_a, col_b, col_c, col_d, col_e = st.columns(5)
-    metrics = [
-        (col_a, "Overall Score", f"{row['total_score']:.1f}", "/ 100"),
-        (col_b, "Rank", f"#{int(row['rank'])}", f"of {len(df_scored)}"),
-        (col_c, "Cap Rate", f"{row['cap_rate']:.2f}%", f"Spread: {row['cap_rate_spread']:.2f}%"),
-        (col_d, "Emp. Growth", f"{row['employment_growth']:.2f}%", "Annual"),
-        (col_e, "Pop. Growth", f"{row['population_growth']:.2f}%", "Annual"),
-    ]
-    for col, label, value, sub in metrics:
-        col.markdown(
-            f"<div class='metric-card'>"
-            f"<div class='metric-label'>{label}</div>"
-            f"<div class='metric-value'>{value}</div>"
-            f"<div class='metric-sub'>{sub}</div>"
-            f"</div>",
-            unsafe_allow_html=True,
+        st.dataframe(
+            df_display,
+            use_container_width=True,
+            height=480,
+            hide_index=True,
+            column_config={
+                "Rank": st.column_config.NumberColumn(width="small"),
+                "Score": st.column_config.TextColumn(width="small"),
+            },
         )
 
-    st.markdown("<br>", unsafe_allow_html=True)
+    elif view == "Market Map":
+        state_data = aggregate_to_states(df_scored)
+        fig_map = build_choropleth_figure(state_data)
 
-    drill_col1, drill_col2 = st.columns(2)
+        # Legend
+        leg_col, _ = st.columns([1, 3])
+        with leg_col:
+            st.markdown(
+                "<div style='font-size:11px;color:#64748b;line-height:1.8'>"
+                "<span style='color:#1a3a5c;font-weight:700'>■</span> 85–100 Top Tier &nbsp;"
+                "<span style='color:#2d6a9f;font-weight:700'>■</span> 70–84 Strong &nbsp;"
+                "<span style='color:#60a5fa;font-weight:700'>■</span> 55–69 Moderate &nbsp;"
+                "<span style='color:#bfdbfe;font-weight:700'>■</span> &lt;55 Monitor"
+                "</div>",
+                unsafe_allow_html=True,
+            )
 
-    # Score breakdown radar / bar
-    with drill_col1:
-        st.markdown(f"**Score Breakdown — {selected_metro}**")
-        categories = list(breakdown.keys())[:-1]  # exclude Total Score
-        values = [breakdown[k] for k in categories]
+        # Render map — capture click via on_select
+        map_event = st.plotly_chart(
+            fig_map,
+            use_container_width=True,
+            on_select="rerun",
+            key="choropleth_map",
+            config={"displayModeBar": False},
+        )
 
-        fig_radar = go.Figure()
-        fig_radar.add_trace(
+        # Determine selected state from click event
+        selected_state = None
+        if map_event and map_event.get("selection") and map_event["selection"].get("points"):
+            selected_state = map_event["selection"]["points"][0].get("location")
+        if selected_state is None:
+            selected_state = st.session_state.get("map_selected_state")
+        if selected_state:
+            st.session_state["map_selected_state"] = selected_state
+
+        # Side panel — show selected state's metros
+        if selected_state and selected_state in state_data:
+            sd = state_data[selected_state]
+            st.markdown(f"### {selected_state} — {len(sd['metros'])} Market(s)")
+            cols = st.columns(min(len(sd["metros"]), 3))
+            for i, m in enumerate(sd["metros"]):
+                tier = (
+                    "Top Tier" if m["total_score"] >= 80
+                    else "Strong" if m["total_score"] >= 65
+                    else "Moderate" if m["total_score"] >= 50
+                    else "Monitor"
+                )
+                tier_color = (
+                    "#16a34a" if m["total_score"] >= 80
+                    else "#2563eb" if m["total_score"] >= 65
+                    else "#d97706" if m["total_score"] >= 50
+                    else "#dc2626"
+                )
+                with cols[i % 3]:
+                    st.markdown(
+                        f"<div class='metric-card'>"
+                        f"<div class='metric-label'>{m['metro']}</div>"
+                        f"<div class='metric-value'>{m['total_score']:.1f}</div>"
+                        f"<div class='metric-sub'>Rank #{int(m['rank'])} · "
+                        f"<span style='color:{tier_color}'>{tier}</span></div>"
+                        f"</div>",
+                        unsafe_allow_html=True,
+                    )
+                    if st.button(
+                        f"Underwrite in {m['metro'].split(',')[0]} →",
+                        key=f"uw_{m['metro']}",
+                        use_container_width=True,
+                    ):
+                        st.session_state["prefill_market"] = m["metro"]
+        else:
+            st.info("Click a state on the map to explore its markets.")
+
+    elif view == "Charts":
+        # ── Top 10 Bar Chart ──────────────────────────────────────────────────────
+        st.markdown("### Top 10 Markets by Score")
+        top10 = df_scored.head(10)
+
+        fig_bar = go.Figure()
+        fig_bar.add_trace(
             go.Bar(
-                x=categories,
-                y=values,
-                marker_color=["#2d6a9f", "#16a34a", "#c8a951", "#7c3aed"],
-                text=[f"{v:.1f}" for v in values],
+                x=top10["metro"],
+                y=top10["total_score"],
+                marker=dict(
+                    color=top10["total_score"],
+                    colorscale="Blues",
+                    showscale=False,
+                ),
+                text=top10["total_score"].map("{:.1f}".format),
                 textposition="outside",
             )
         )
-        fig_radar.update_layout(
-            yaxis_title="Score Contribution",
+        fig_bar.update_layout(
+            xaxis_tickangle=-30,
+            yaxis_title="Composite Score (0–100)",
             plot_bgcolor="white",
             paper_bgcolor="white",
-            margin=dict(t=20, b=60, l=40, r=10),
-            height=280,
-            font=dict(size=10, color="#1a3a5c"),
+            margin=dict(t=20, b=80, l=40, r=20),
+            height=350,
+            font=dict(color="#1a3a5c"),
         )
-        fig_radar.update_xaxes(tickangle=-20)
-        fig_radar.update_yaxes(range=[0, 32], gridcolor="#e2e8f0")
-        st.plotly_chart(fig_radar, use_container_width=True)
+        fig_bar.update_yaxes(range=[0, 105], gridcolor="#e2e8f0")
+        st.plotly_chart(fig_bar, use_container_width=True)
 
-    # Scatter: Employment vs Cap Rate spread
-    with drill_col2:
-        st.markdown("**Employment Growth vs. Cap Rate Spread**")
-        fig_scatter = px.scatter(
-            df_scored,
-            x="employment_growth",
-            y="cap_rate_spread",
-            size="total_score",
-            color="total_score",
-            hover_name="metro",
-            color_continuous_scale="Blues",
-            labels={
-                "employment_growth": "Employment Growth (%)",
-                "cap_rate_spread": "Cap Rate Spread (%)",
-                "total_score": "Score",
-            },
-        )
-        # Highlight selected metro
-        sel_row = df_scored[df_scored["metro"] == selected_metro]
-        fig_scatter.add_trace(
-            go.Scatter(
-                x=sel_row["employment_growth"],
-                y=sel_row["cap_rate_spread"],
-                mode="markers",
-                marker=dict(color="#c8a951", size=16, symbol="star"),
-                name=selected_metro,
-                showlegend=True,
+        st.markdown("---")
+
+        # ── Market Drilldown ─────────────────────────────────────────────────────
+        st.markdown("### Market Drilldown")
+        metro_list = df_scored["metro"].tolist()
+        selected_metro = st.selectbox("Select a metro for detailed analysis:", metro_list)
+
+        row = df_scored[df_scored["metro"] == selected_metro].iloc[0]
+        breakdown = get_score_breakdown(row)
+
+        col_a, col_b, col_c, col_d, col_e = st.columns(5)
+        metrics = [
+            (col_a, "Overall Score", f"{row['total_score']:.1f}", "/ 100"),
+            (col_b, "Rank", f"#{int(row['rank'])}", f"of {len(df_scored)}"),
+            (col_c, "Cap Rate", f"{row['cap_rate']:.2f}%", f"Spread: {row['cap_rate_spread']:.2f}%"),
+            (col_d, "Emp. Growth", f"{row['employment_growth']:.2f}%", "Annual"),
+            (col_e, "Pop. Growth", f"{row['population_growth']:.2f}%", "Annual"),
+        ]
+        for col, label, value, sub in metrics:
+            col.markdown(
+                f"<div class='metric-card'>"
+                f"<div class='metric-label'>{label}</div>"
+                f"<div class='metric-value'>{value}</div>"
+                f"<div class='metric-sub'>{sub}</div>"
+                f"</div>",
+                unsafe_allow_html=True,
             )
-        )
-        fig_scatter.update_layout(
-            plot_bgcolor="white",
-            paper_bgcolor="white",
-            margin=dict(t=20, b=20, l=40, r=20),
-            height=280,
-            font=dict(size=10, color="#1a3a5c"),
-            coloraxis_showscale=False,
-        )
-        fig_scatter.update_xaxes(gridcolor="#e2e8f0")
-        fig_scatter.update_yaxes(gridcolor="#e2e8f0")
-        st.plotly_chart(fig_scatter, use_container_width=True)
+
+        st.markdown("<br>", unsafe_allow_html=True)
+
+        drill_col1, drill_col2 = st.columns(2)
+
+        # Score breakdown radar / bar
+        with drill_col1:
+            st.markdown(f"**Score Breakdown — {selected_metro}**")
+            categories = list(breakdown.keys())[:-1]  # exclude Total Score
+            values = [breakdown[k] for k in categories]
+
+            fig_radar = go.Figure()
+            fig_radar.add_trace(
+                go.Bar(
+                    x=categories,
+                    y=values,
+                    marker_color=["#2d6a9f", "#16a34a", "#c8a951", "#7c3aed"],
+                    text=[f"{v:.1f}" for v in values],
+                    textposition="outside",
+                )
+            )
+            fig_radar.update_layout(
+                yaxis_title="Score Contribution",
+                plot_bgcolor="white",
+                paper_bgcolor="white",
+                margin=dict(t=20, b=60, l=40, r=10),
+                height=280,
+                font=dict(size=10, color="#1a3a5c"),
+            )
+            fig_radar.update_xaxes(tickangle=-20)
+            fig_radar.update_yaxes(range=[0, 32], gridcolor="#e2e8f0")
+            st.plotly_chart(fig_radar, use_container_width=True)
+
+        # Scatter: Employment vs Cap Rate spread
+        with drill_col2:
+            st.markdown("**Employment Growth vs. Cap Rate Spread**")
+            fig_scatter = px.scatter(
+                df_scored,
+                x="employment_growth",
+                y="cap_rate_spread",
+                size="total_score",
+                color="total_score",
+                hover_name="metro",
+                color_continuous_scale="Blues",
+                labels={
+                    "employment_growth": "Employment Growth (%)",
+                    "cap_rate_spread": "Cap Rate Spread (%)",
+                    "total_score": "Score",
+                },
+            )
+            # Highlight selected metro
+            sel_row = df_scored[df_scored["metro"] == selected_metro]
+            fig_scatter.add_trace(
+                go.Scatter(
+                    x=sel_row["employment_growth"],
+                    y=sel_row["cap_rate_spread"],
+                    mode="markers",
+                    marker=dict(color="#c8a951", size=16, symbol="star"),
+                    name=selected_metro,
+                    showlegend=True,
+                )
+            )
+            fig_scatter.update_layout(
+                plot_bgcolor="white",
+                paper_bgcolor="white",
+                margin=dict(t=20, b=20, l=40, r=20),
+                height=280,
+                font=dict(size=10, color="#1a3a5c"),
+                coloraxis_showscale=False,
+            )
+            fig_scatter.update_xaxes(gridcolor="#e2e8f0")
+            fig_scatter.update_yaxes(gridcolor="#e2e8f0")
+            st.plotly_chart(fig_scatter, use_container_width=True)
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -545,7 +626,10 @@ with tab2:
         with col1:
             property_name = st.text_input("Property Name", value="Retail Center at Main St")
         with col2:
-            market = st.text_input("Market", value="Dallas-Fort Worth, TX")
+            market = st.text_input(
+                "Market",
+                value=st.session_state.pop("prefill_market", "Dallas-Fort Worth, TX"),
+            )
         with col3:
             square_footage = st.number_input("Square Footage (SF)", value=25000, min_value=100, step=500)
 
