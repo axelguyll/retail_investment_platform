@@ -17,6 +17,7 @@ from plotly.subplots import make_subplots
 from data.fetch_data import build_market_data
 from scoring.score_markets import score_markets, get_score_breakdown, WEIGHTS
 from underwriting.underwrite import DealInputs, run_underwriting
+from underwriting.sensitivity import build_sensitivity_grid, style_sensitivity_grid
 from export.pdf_export import generate_pdf
 from map.market_map import aggregate_to_states, build_choropleth_figure
 
@@ -766,6 +767,25 @@ with tab2:
 
         st.dataframe(style_cf_table(cf), use_container_width=True, hide_index=True)
 
+        st.markdown("---")
+
+        # ── Sensitivity Analysis ────────────────────────────────────────────
+        st.markdown("### IRR Sensitivity Analysis")
+        st.caption(
+            "Levered IRR across exit cap rate scenarios (columns, ±150bps) "
+            "and hold periods (rows). Current deal inputs are outlined."
+        )
+
+        with st.spinner("Computing sensitivity grid..."):
+            sens_grid = build_sensitivity_grid(inputs)
+
+        styled_grid = style_sensitivity_grid(
+            sens_grid,
+            current_hold=inputs.hold_period,
+            current_exit_cap=inputs.exit_cap_rate,
+        )
+
+        st.dataframe(styled_grid, use_container_width=True)
         st.markdown("---")
 
         # ── Charts ──────────────────────────────────────────────────────────
