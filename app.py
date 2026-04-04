@@ -126,7 +126,7 @@ st.markdown(
         border: 1px solid #e2e8f0;
         border-top: none;
         border-radius: 0 0 8px 8px;
-        padding: 24px;
+        padding: 16px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
 
