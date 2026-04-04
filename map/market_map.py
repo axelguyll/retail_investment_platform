@@ -33,25 +33,17 @@ def aggregate_to_states(df: pd.DataFrame) -> dict:
         },
         ...
       }
+    Passing an empty DataFrame returns an empty dict.
     """
     state_data = {}
-
-    for _, row in df.iterrows():
-        state = row["state"]
-        if state not in state_data:
-            state_data[state] = {"top_score": -1, "top_metro": "", "metros": []}
-
-        metro_entry = row.to_dict()
-        state_data[state]["metros"].append(metro_entry)
-
-        if row["total_score"] > state_data[state]["top_score"]:
-            state_data[state]["top_score"] = row["total_score"]
-            state_data[state]["top_metro"] = row["metro"]
-
-    # Sort metros within each state descending by score
-    for state in state_data:
-        state_data[state]["metros"].sort(key=lambda x: x["total_score"], reverse=True)
-
+    for state, group in df.groupby("state"):
+        top_row = group.loc[group["total_score"].idxmax()]
+        state_data[state] = {
+            "top_score": top_row["total_score"],
+            "top_metro": top_row["metro"],
+            "metros": group.sort_values("total_score", ascending=False)
+                          .to_dict("records"),
+        }
     return state_data
 
 
@@ -59,6 +51,7 @@ def build_choropleth_figure(state_data: dict) -> go.Figure:
     """
     Build a Plotly choropleth figure from aggregated state data.
     States are colored by their top metro's total_score (0-100 scale).
+    Passing an empty dict renders a blank map.
     """
     states = list(state_data.keys())
     scores = [state_data[s]["top_score"] for s in states]
