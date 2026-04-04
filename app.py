@@ -436,12 +436,16 @@ with tab1:
 
         # Determine selected state from click event
         selected_state = None
-        if map_event and map_event.get("selection") and map_event["selection"].get("points"):
-            selected_state = map_event["selection"]["points"][0].get("location")
-        if selected_state is None:
+        if map_event and map_event.get("selection") is not None:
+            points = map_event["selection"].get("points", [])
+            if points:
+                selected_state = points[0].get("location")
+                st.session_state["map_selected_state"] = selected_state
+            else:
+                # User clicked empty area — clear selection
+                st.session_state.pop("map_selected_state", None)
+        else:
             selected_state = st.session_state.get("map_selected_state")
-        if selected_state:
-            st.session_state["map_selected_state"] = selected_state
 
         # Side panel — show selected state's metros
         if selected_state and selected_state in state_data:
@@ -477,6 +481,7 @@ with tab1:
                         use_container_width=True,
                     ):
                         st.session_state["prefill_market"] = m["metro"]
+                        st.toast(f"Market set to {m['metro']} — click the Underwriting Tool tab", icon="✅")
         else:
             st.info("Click a state on the map to explore its markets.")
 
