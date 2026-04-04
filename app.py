@@ -19,7 +19,9 @@ from scoring.score_markets import score_markets, get_score_breakdown, WEIGHTS
 from underwriting.underwrite import DealInputs, run_underwriting
 from underwriting.sensitivity import build_sensitivity_grid, style_sensitivity_grid
 from export.pdf_export import generate_pdf
+from export.memo_pdf import generate_memo_pdf
 from map.market_map import aggregate_to_states, build_choropleth_figure
+from ai.memo_generator import generate_memo_streaming
 
 # ─── Page Config ─────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -277,6 +279,12 @@ with st.sidebar:
         value=st.secrets.get("CENSUS_API_KEY", os.environ.get("CENSUS_API_KEY", "")),
         type="password",
         help="Request at https://api.census.gov/data/key_signup.html",
+    )
+    anthropic_key = st.text_input(
+        "Anthropic API Key",
+        value=st.secrets.get("ANTHROPIC_API_KEY", os.environ.get("ANTHROPIC_API_KEY", "")),
+        type="password",
+        help="Required for AI Investment Memo generation. Get a key at console.anthropic.com",
     )
 
     st.markdown("---")
@@ -691,6 +699,7 @@ with tab2:
             results = run_underwriting(inputs)
             st.session_state["uw_results"] = results
             st.session_state["uw_inputs"] = inputs
+            st.session_state.pop("memo_text", None)
 
         results = st.session_state["uw_results"]
         inputs = st.session_state["uw_inputs"]
@@ -786,6 +795,65 @@ with tab2:
         )
 
         st.dataframe(styled_grid, use_container_width=True)
+        st.markdown("---")
+
+        # ── AI Investment Memo ──────────────────────────────────────────────
+        st.markdown("### AI Investment Memo")
+
+        if not anthropic_key:
+            st.info("Add your Anthropic API key in the sidebar to enable AI memo generation.")
+        else:
+            memo_col, _ = st.columns([2, 4])
+            with memo_col:
+                generate_memo = st.button(
+                    "Generate Investment Memo",
+                    type="primary",
+                    use_container_width=True,
+                )
+
+            if generate_memo or "memo_text" in st.session_state:
+                if generate_memo:
+                    memo_container = st.empty()
+                    memo_text = ""
+                    try:
+                        for chunk in generate_memo_streaming(anthropic_key, inputs, results):
+                            memo_text += chunk
+                            memo_container.markdown(
+                                f"<div style='background:white;border:1px solid #e2e8f0;"
+                                f"border-radius:8px;padding:20px;font-size:13px;line-height:1.7'>"
+                                f"{memo_text}</div>",
+                                unsafe_allow_html=True,
+                            )
+                        st.session_state["memo_text"] = memo_text
+                    except Exception as e:
+                        st.error(f"Memo generation failed: {e}")
+                        memo_text = ""
+                else:
+                    memo_text = st.session_state.get("memo_text", "")
+                    if memo_text:
+                        st.markdown(
+                            f"<div style='background:white;border:1px solid #e2e8f0;"
+                            f"border-radius:8px;padding:20px;font-size:13px;line-height:1.7'>"
+                            f"{memo_text}</div>",
+                            unsafe_allow_html=True,
+                        )
+
+                if memo_text:
+                    pdf_bytes = generate_memo_pdf(
+                        memo_text,
+                        inputs.property_name,
+                        inputs.market,
+                    )
+                    dl_col, _ = st.columns([2, 4])
+                    with dl_col:
+                        st.download_button(
+                            label="Download Memo PDF",
+                            data=pdf_bytes,
+                            file_name=f"{inputs.property_name.replace(' ', '_')}_Memo.pdf",
+                            mime="application/pdf",
+                            use_container_width=True,
+                        )
+
         st.markdown("---")
 
         # ── Charts ──────────────────────────────────────────────────────────
