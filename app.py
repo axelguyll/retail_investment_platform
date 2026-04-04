@@ -417,10 +417,10 @@ with tab1:
         with leg_col:
             st.markdown(
                 "<div style='font-size:11px;color:#64748b;line-height:1.8'>"
-                "<span style='color:#1a3a5c;font-weight:700'>■</span> 85–100 Top Tier &nbsp;"
-                "<span style='color:#2d6a9f;font-weight:700'>■</span> 70–84 Strong &nbsp;"
-                "<span style='color:#60a5fa;font-weight:700'>■</span> 55–69 Moderate &nbsp;"
-                "<span style='color:#bfdbfe;font-weight:700'>■</span> &lt;55 Monitor"
+                "<span style='color:#1a3a5c;font-weight:700'>■</span> 80–100 Top Tier &nbsp;"
+                "<span style='color:#2d6a9f;font-weight:700'>■</span> 65–79 Strong &nbsp;"
+                "<span style='color:#60a5fa;font-weight:700'>■</span> 50–64 Moderate &nbsp;"
+                "<span style='color:#bfdbfe;font-weight:700'>■</span> &lt;50 Monitor"
                 "</div>",
                 unsafe_allow_html=True,
             )
