@@ -262,30 +262,41 @@ with st.sidebar:
     st.markdown("### API Keys")
     st.caption("Optional — app works without keys using CSV fallback")
 
-    fred_key = st.text_input(
-        "FRED API Key",
-        value=st.secrets.get("FRED_API_KEY", os.environ.get("FRED_API_KEY", "")),
-        type="password",
-        help="Get a free key at https://fred.stlouisfed.org/docs/api/api_key.html",
-    )
-    bls_key = st.text_input(
-        "BLS API Key",
-        value=st.secrets.get("BLS_API_KEY", os.environ.get("BLS_API_KEY", "")),
-        type="password",
-        help="Register at https://data.bls.gov/registrationEngine/",
-    )
-    census_key = st.text_input(
-        "Census API Key",
-        value=st.secrets.get("CENSUS_API_KEY", os.environ.get("CENSUS_API_KEY", "")),
-        type="password",
-        help="Request at https://api.census.gov/data/key_signup.html",
-    )
-    anthropic_key = st.text_input(
-        "Anthropic API Key",
-        value=st.secrets.get("ANTHROPIC_API_KEY", os.environ.get("ANTHROPIC_API_KEY", "")),
-        type="password",
-        help="Required for AI Investment Memo generation. Get a key at console.anthropic.com",
-    )
+    _fred_secret = st.secrets.get("FRED_API_KEY", os.environ.get("FRED_API_KEY", ""))
+    if _fred_secret:
+        st.text_input("FRED API Key", value="Configured ✓", disabled=True,
+                      help="Key loaded from environment or Streamlit secrets.")
+        fred_key = _fred_secret
+    else:
+        fred_key = st.text_input("FRED API Key", value="", type="password",
+                                 help="Get a free key at https://fred.stlouisfed.org/docs/api/api_key.html")
+
+    _bls_secret = st.secrets.get("BLS_API_KEY", os.environ.get("BLS_API_KEY", ""))
+    if _bls_secret:
+        st.text_input("BLS API Key", value="Configured ✓", disabled=True,
+                      help="Key loaded from environment or Streamlit secrets.")
+        bls_key = _bls_secret
+    else:
+        bls_key = st.text_input("BLS API Key", value="", type="password",
+                                help="Register at https://data.bls.gov/registrationEngine/")
+
+    _census_secret = st.secrets.get("CENSUS_API_KEY", os.environ.get("CENSUS_API_KEY", ""))
+    if _census_secret:
+        st.text_input("Census API Key", value="Configured ✓", disabled=True,
+                      help="Key loaded from environment or Streamlit secrets.")
+        census_key = _census_secret
+    else:
+        census_key = st.text_input("Census API Key", value="", type="password",
+                                   help="Request at https://api.census.gov/data/key_signup.html")
+
+    _anthropic_secret = st.secrets.get("ANTHROPIC_API_KEY", os.environ.get("ANTHROPIC_API_KEY", ""))
+    if _anthropic_secret:
+        st.text_input("Anthropic API Key", value="Configured ✓", disabled=True,
+                      help="Key loaded from environment or Streamlit secrets.")
+        anthropic_key = _anthropic_secret
+    else:
+        anthropic_key = st.text_input("Anthropic API Key", value="", type="password",
+                                      help="Required for AI Investment Memo. Get a key at console.anthropic.com")
 
     st.markdown("---")
     st.markdown("### Scoring Weights")

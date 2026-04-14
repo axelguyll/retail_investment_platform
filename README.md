@@ -40,6 +40,8 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
+Copy `.env.example` to `.env` and fill in your API keys (all free, all optional — app works with CSV fallback):
+
 Optionally add free API keys in the sidebar for live data (app works without them via CSV fallback):
 - [FRED API Key](https://fred.stlouisfed.org/docs/api/api_key.html)
 - [BLS API Key](https://data.bls.gov/registrationEngine/)
